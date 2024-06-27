@@ -24,6 +24,10 @@ public class CheckIn {
     public Salary calculateSalary(Calendar calendar) {
         double grossSalary = 0.0;
         Double hourlyRate = employee.category().getHourlyRate();
+        int hoursPerDay = 10;
+        double nightMaj = 1.3;
+        double sundayMaj = 0.4;
+        double holidayMaj = 1.5;
 
         for (LocalDate date : workShift.keySet()) {
             WorkShift shift = workShift.get(date);
@@ -32,40 +36,40 @@ public class CheckIn {
 
             switch (shift) {
                 case day:
-                    if (isSunday) {
-                        grossSalary += hourlyRate * 10 * 1.4;
+                    if (isHoliday) {
+                        grossSalary += hourlyRate * hoursPerDay * holidayMaj;
                     } else {
-                        grossSalary += hourlyRate * 10;
+                        grossSalary += hourlyRate * hoursPerDay;
                     }
                     break;
                 case night:
-                    if (isSunday) {
-                        grossSalary += hourlyRate * 10 * 1.3 * 1.4;
+                    if (isHoliday) {
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj * holidayMaj;
                     } else {
-                        grossSalary += hourlyRate * 10 * 1.3;
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj;
                     }
                     break;
                 case both:
-                    if (isSunday) {
-                        grossSalary += hourlyRate * 10 * 1.4;
-                        grossSalary += hourlyRate * 10 * 1.3 * 1.4;
+                    if (isHoliday) {
+                        grossSalary += hourlyRate * hoursPerDay * holidayMaj;
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj * holidayMaj;
                     } else {
-                        grossSalary += hourlyRate * 10;
-                        grossSalary += hourlyRate * 10 * 1.3;
+                        grossSalary += hourlyRate * hoursPerDay;
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj;
                     }
                     break;
             }
-            if(isHoliday){
+            if(isSunday){
                 switch (shift){
                     case day :
-                        grossSalary += hourlyRate * 10 * 0.5;
+                        grossSalary += hourlyRate * hoursPerDay * sundayMaj;
                         break;
                     case night:
-                        grossSalary += hourlyRate * 10 * 1.3 * 0.5;
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj * sundayMaj;
                         break;
                     case both:
-                        grossSalary += hourlyRate * 10 * 0.5;
-                        grossSalary += hourlyRate * 10 * 1.3 * 0.5;
+                        grossSalary += hourlyRate * hoursPerDay * sundayMaj;
+                        grossSalary += hourlyRate * hoursPerDay * nightMaj * sundayMaj;
                 }
             }
         }
