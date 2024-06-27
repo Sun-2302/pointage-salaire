@@ -32,45 +32,43 @@ public class CheckIn {
 
             switch (shift) {
                 case day:
-                    if (isHoliday) {
-                        grossSalary += hourlyRate * 10 * 1.5;
+                    if (isSunday) {
+                        grossSalary += hourlyRate * 10 * 1.4;
                     } else {
                         grossSalary += hourlyRate * 10;
                     }
                     break;
                 case night:
-                    if (isHoliday) {
-                        grossSalary += hourlyRate * 14 * 1.3 * 1.5;
+                    if (isSunday) {
+                        grossSalary += hourlyRate * 10 * 1.3 * 1.4;
                     } else {
-                        grossSalary += hourlyRate * 14 * 1.3;
+                        grossSalary += hourlyRate * 10 * 1.3;
                     }
                     break;
                 case both:
-                    if (isHoliday) {
-                        grossSalary += hourlyRate * 10 * 1.5;
-                        grossSalary += hourlyRate * 14 * 1.3 * 1.5;
+                    if (isSunday) {
+                        grossSalary += hourlyRate * 10 * 1.4;
+                        grossSalary += hourlyRate * 10 * 1.3 * 1.4;
                     } else {
                         grossSalary += hourlyRate * 10;
-                        grossSalary += hourlyRate * 14 * 1.3;
+                        grossSalary += hourlyRate * 10 * 1.3;
                     }
                     break;
             }
-
-            if(isSunday){
+            if(isHoliday){
                 switch (shift){
                     case day :
-                        grossSalary += hourlyRate * 10 * 0.4;
+                        grossSalary += hourlyRate * 10 * 0.5;
                         break;
                     case night:
-                        grossSalary += hourlyRate * 14 * 1.3 * 0.4;
+                        grossSalary += hourlyRate * 10 * 1.3 * 0.5;
                         break;
                     case both:
-                        grossSalary += hourlyRate * 10 * 0.4;
-                        grossSalary += hourlyRate * 14 * 1.3 * 0.4;
+                        grossSalary += hourlyRate * 10 * 0.5;
+                        grossSalary += hourlyRate * 10 * 1.3 * 0.5;
                 }
             }
         }
-
         return new Salary(grossSalary);
     }
 
