@@ -9,43 +9,93 @@ import java.util.Date;
 
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static school.hei.WorkShift.both;
-import static school.hei.WorkShift.day;
+import static school.hei.WorkShift.*;
 
 public class CheckInTest {
+
     @Test
-    public void checkIn_test(){
-        //Calendar Instance
-        var year = 2024;
-        var month = JUNE;
+    public void hours_of_work_test(){
+        var securityGuard = new SecurityGuard(70, 100000.0, 20000.0);
+        var rakoto = new Employee("Rakoto","","001", new Date(),new Date(), new Date(), securityGuard);
+        var rabe = new Employee("Rabe","","002", new Date(),new Date(), new Date(), securityGuard);
 
-        var holidays = new ArrayList<LocalDate>();
-        holidays.add(LocalDate.of(year, month, 17));
-        holidays.add(LocalDate.of(year, month, 25));
-        holidays.add(LocalDate.of(year, month, 26));
+        var begin = LocalDate.of(2024,MAY,26);
+        var end = LocalDate.of(2024,JULY,6);
+        var calendar = new Calendar(begin, end);
 
-        var june = new Calendar(year, month, holidays);
-
-        //Create Rakoto SecurityGuard
-        var securityGuard = new SecurityGuard(56, 100000.0, 20000.0);
-        var rakoto = new Employee("Rakoto","Mahaliana","001", new Date(),new Date(), new Date(), securityGuard);
 
         var rakotoCheckIn = new CheckIn(rakoto);
+        var rabeCheckIn = new CheckIn(rabe);
 
-        //Do checkIn for June
-        for (LocalDate date : june.getWorkingDays()) {
+        for (LocalDate date : calendar.getWorkingDays()) {
             rakotoCheckIn.addDayWork(date, day);
+            rabeCheckIn.addDayWork(date, night);
         }
 
-        //Work in holidays
-        rakotoCheckIn.addDayWork(LocalDate.of(year, month, 17), day);
-        rakotoCheckIn.addDayWork(LocalDate.of(year, month, 25), both);
-        rakotoCheckIn.addDayWork(LocalDate.of(year, month, 26), both);
+        assertEquals(420, rakotoCheckIn.getHoursOfWork());
+        assertEquals(588, rabeCheckIn.getHoursOfWork());
+    }
 
-        Salary rakotoSalary = rakotoCheckIn.calculateSalary(june);
+    @Test
+    public void get_salary_test(){
+        var securityGuard = new SecurityGuard(70, 100000.0, 20000.0);
+        var rakoto = new Employee("Rakoto","","001", new Date(),new Date(), new Date(), securityGuard);
+        var rabe = new Employee("Rabe","","002", new Date(),new Date(), new Date(), securityGuard);
 
-        assertEquals(328, rakotoCheckIn.getHoursOfWork());
-        assertEquals(695714, Math.round(rakotoSalary.getGrossSalary()));
-        assertEquals(Math.round(rakotoSalary.getNetSalary()),Math.round(rakotoSalary.getGrossSalary()*0.8));
+        var begin = LocalDate.of(2024,MAY,26);
+        var end = LocalDate.of(2024,JULY,6);
+        var calendar = new Calendar(begin, end);
+
+
+        var rakotoCheckIn = new CheckIn(rakoto);
+        var rabeCheckIn = new CheckIn(rabe);
+
+        for (LocalDate date : calendar.getWorkingDays()) {
+            rakotoCheckIn.addDayWork(date, day);
+            rabeCheckIn.addDayWork(date, night);
+        }
+
+        assertEquals(634_286, Math.rint(rakotoCheckIn.calculateSalary(calendar).getGrossSalary()));
+        assertEquals(824_571, Math.rint(rabeCheckIn.calculateSalary(calendar).getGrossSalary()));
+    }
+
+    @Test
+    public void get_salary_with_holiday_test(){
+        var securityGuard = new SecurityGuard(70, 100000.0, 20000.0);
+        var rakoto = new Employee("Rakoto","","001", new Date(),new Date(), new Date(), securityGuard);
+        var rabe = new Employee("Rabe","","002", new Date(),new Date(), new Date(), securityGuard);
+
+        var begin = LocalDate.of(2024,MAY,26);
+        var end = LocalDate.of(2024,JULY,6);
+
+        var ferie1 = LocalDate.of(2024, JUNE, 17);
+        var ferie2 = LocalDate.of(2024, JUNE, 25);
+        var ferie3 = LocalDate.of(2024, JUNE, 26);
+        var holidays = new ArrayList<LocalDate>();
+        holidays.add(ferie1);
+        holidays.add(ferie2);
+        holidays.add(ferie3);
+
+        var calendar = new Calendar(begin, end, holidays);
+
+        var rakotoCheckIn = new CheckIn(rakoto);
+        var rabeCheckIn = new CheckIn(rabe);
+
+
+        for (LocalDate date : calendar.getWorkingDays()) {
+            rakotoCheckIn.addDayWork(date, day);
+            rabeCheckIn.addDayWork(date, night);
+        }
+
+        rakotoCheckIn.addDayWork(ferie1, day);
+        rakotoCheckIn.addDayWork(ferie2, day);
+        rakotoCheckIn.addDayWork(ferie3, day);
+
+        rabeCheckIn.addDayWork(ferie1, night);
+        rabeCheckIn.addDayWork(ferie2, night);
+        rabeCheckIn.addDayWork(ferie3, night);
+
+        assertEquals(655_714, Math.rint(rakotoCheckIn.calculateSalary(calendar).getGrossSalary()));
+        assertEquals(852_429, Math.rint(rabeCheckIn.calculateSalary(calendar).getGrossSalary()));
     }
 }
